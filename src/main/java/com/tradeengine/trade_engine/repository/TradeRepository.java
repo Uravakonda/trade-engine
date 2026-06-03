@@ -14,18 +14,12 @@ import java.util.List;
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Long> {
 
-    // Used by service layer — single argument
     List<Trade> findByUserId(String userId);
 
-    // Used by service layer — single argument
+
     List<Trade> findByStatus(TradeStatus status);
 
-    /*
-     * Used by RepositoryItemReader in the batch job.
-     * RepositoryItemReader appends a Pageable argument when calling the method,
-     * so the signature must accept Pageable as a second parameter.
-     * Spring Data derives: SELECT * FROM trades WHERE status = ? with pagination.
-     */
+
     Page<Trade> findByStatus(TradeStatus status, Pageable pageable);
 
     @Query("SELECT t FROM Trade t WHERE t.status = 'EXECUTED' " +

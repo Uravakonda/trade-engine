@@ -41,8 +41,7 @@ spring:
       initialize-schema: always
       schema: classpath:org/springframework/batch/core/schema-postgresql.sql
     job:
-      # Prevents Spring Boot from auto-running the batch job on every startup.
-      # The job runs on schedule (01:00 AM daily) or via POST /api/v1/batch/run-settlement.
+
       enabled: false
 
 logging:

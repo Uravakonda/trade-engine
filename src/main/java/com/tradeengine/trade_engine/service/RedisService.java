@@ -7,26 +7,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
-/*
- * Theory — StringRedisTemplate:
- *
- * Spring provides RedisTemplate<K,V> as a generic Redis client.
- * StringRedisTemplate is a pre-configured version where both the
- * key and value are plain strings. This is the simplest option
- * and works well here since all our values (balance amounts,
- * prices) are easily representable as strings.
- *
- * opsForValue() returns the operations object for simple key-value
- * commands: GET, SET, INCR, EXPIRE etc. Redis has other data
- * structures — lists (opsForList), sets (opsForSet), hashes
- * (opsForHash), sorted sets (opsForZSet) — each with their own
- * operations object. Sorted sets are used for leaderboards;
- * hashes for storing objects; lists for queues.
- *
- * Key naming with prefixes ("balance:", "price:") creates logical
- * namespaces in Redis. When you run KEYS * in redis-cli you can
- * immediately see which keys belong to which feature.
- */
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -70,13 +51,7 @@ public class RedisService {
                 userId, amount, current.add(amount));
     }
 
-    /*
-     * Market prices are given a TTL (time-to-live) of 60 seconds.
-     * After 60 seconds Redis automatically deletes the key.
-     * This simulates a real market data feed where prices expire
-     * and must be refreshed. In production a separate service
-     * would continuously push updated prices into Redis.
-     */
+
     public void setMarketPrice(String ticker, BigDecimal price) {
         redisTemplate.opsForValue().set(
                 PRICE_KEY_PREFIX + ticker,

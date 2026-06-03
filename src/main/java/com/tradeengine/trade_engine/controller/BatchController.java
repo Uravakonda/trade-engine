@@ -19,20 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class BatchController {
 
-    /*
-     * Theory — why JobOperator instead of JobLauncher:
-     *
-     * JobLauncher was the original Spring Batch API for starting jobs.
-     * In Spring Batch 6 it was deprecated and replaced by JobOperator,
-     * which provides a richer interface: you can start, stop, restart,
-     * and abandon jobs. JobOperator is also the standard used in
-     * enterprise scheduling integrations (Quartz, Jenkins, etc.).
-     *
-     * Spring Boot auto-configures a JobOperator bean automatically
-     * when spring-boot-starter-batch is on the classpath, so you
-     * do not need to declare it yourself — @RequiredArgsConstructor
-     * and the field declaration are all that's needed.
-     */
+
     private final JobOperator jobOperator;
     private final TradeSettlementBatchConfig batchConfig;
 
@@ -45,12 +32,7 @@ public class BatchController {
                     .addLong("timestamp", System.currentTimeMillis())
                     .toJobParameters();
 
-            /*
-             * JobOperator.start() accepts the job name as a String
-             * and the JobParameters object. It returns a JobExecution
-             * which contains the status (STARTED, COMPLETED, FAILED etc.)
-             * and metadata about the run (start time, step executions, etc.)
-             */
+
             JobExecution execution = jobOperator.start(job, params);
 
             log.info("Settlement job launched manually. Status={}", execution.getStatus());

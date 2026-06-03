@@ -21,21 +21,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/*
- * @WebMvcTest loads only the web layer — no database, no Kafka, no Redis.
- * Spring Boot 4 no longer exposes ObjectMapper as a bean in the WebMvcTest
- * slice context (it now uses Jackson 3's JsonMapper internally).
- * We create ObjectMapper directly — it does not need to be a Spring bean
- * for JSON serialisation in tests.
- */
+
 @WebMvcTest(TradeController.class)
 class TradeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    // Instantiate directly — NOT @Autowired — because ObjectMapper is not
-    // a registered bean in the Spring Boot 4 WebMvcTest slice context.
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockitoBean

@@ -24,23 +24,7 @@ public class TradeProcessorService {
     private final TradeRepository tradeRepository;
     private final RedisService redisService;
 
-    /*
-     * @KafkaListener subscribes this method to the trade-requests topic.
-     * Spring Kafka manages the entire consumer lifecycle: connecting to
-     * the broker, polling for messages, deserialising the JSON bytes back
-     * into a TradeRequestedEvent object, and calling this method.
-     *
-     * The @Payload annotation extracts the deserialised message body.
-     * The @Header annotations extract Kafka metadata — the partition number
-     * and offset are logged so you can trace any message through the system.
-     *
-     * @Transactional wraps the database save in a transaction. If the
-     * save throws an exception, the transaction rolls back. Note that
-     * the Redis balance decrement is NOT rolled back if the DB save fails —
-     * Redis has no transaction coordination with PostgreSQL. In production
-     * systems this is handled with a distributed saga pattern or by using
-     * Redis as the authoritative source and reconciling later.
-     */
+
     @KafkaListener(
             topics = KafkaConfig.TRADE_REQUESTS_TOPIC,
             groupId = "trade-processor-group",
@@ -69,7 +53,7 @@ public class TradeProcessorService {
                 }
                 redisService.decrementUserBalance(event.getUserId(), totalValue);
             } else {
-                // SELL — credit the proceeds back to the user's balance
+
                 redisService.incrementUserBalance(event.getUserId(), totalValue);
             }
 
@@ -81,9 +65,6 @@ public class TradeProcessorService {
 
         } catch (Exception e) {
             log.error("Failed to process event {}. Error: {}", event.getEventId(), e.getMessage(), e);
-            // In production: configure @RetryableTopic or DeadLetterPublishingRecoverer
-            // so failed messages are retried then sent to a dead-letter topic
-            // for manual review, rather than being silently dropped.
         }
     }
 

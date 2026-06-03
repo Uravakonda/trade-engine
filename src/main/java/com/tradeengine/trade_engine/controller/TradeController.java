@@ -26,18 +26,6 @@ public class TradeController {
     private final KafkaTemplate<String, TradeRequestedEvent> kafkaTemplate;
     private final RedisService redisService;
 
-    /*
-     * POST /api/v1/trades
-     *
-     * @Valid on the parameter triggers Bean Validation on the request body.
-     * If any @NotBlank / @NotNull / @DecimalMin constraint fails,
-     * Spring returns 400 Bad Request automatically — this method is
-     * never even called in that case.
-     *
-     * The controller is intentionally thin: validate → build event →
-     * publish to Kafka → return 202. No business logic lives here.
-     * Business logic lives in TradeProcessorService.
-     */
     @PostMapping("/trades")
     public ResponseEntity<TradeResponse> submitTrade(
             @Valid @RequestBody TradeRequest request) {
@@ -58,9 +46,7 @@ public class TradeController {
                 .timestamp(System.currentTimeMillis())
                 .build();
 
-        // The userId is the Kafka message key. Using the same key for
-        // all messages from the same user means they are routed to the
-        // same partition, guaranteeing processing order per user.
+
         kafkaTemplate.send(KafkaConfig.TRADE_REQUESTS_TOPIC, request.getUserId(), event)
                 .whenComplete((result, ex) -> {
                     if (ex == null) {
@@ -92,7 +78,6 @@ public class TradeController {
         return ResponseEntity.ok("Trade Engine running");
     }
 
-    // Utility endpoints for seeding test data — not part of a real production API
     @PostMapping("/market/prices/{ticker}/{price}")
     public ResponseEntity<String> setMarketPrice(
             @PathVariable String ticker,

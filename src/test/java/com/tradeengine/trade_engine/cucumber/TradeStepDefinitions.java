@@ -14,23 +14,7 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-/*
- * Cucumber glue class — step definitions.
- *
- * Rules that apply here simultaneously:
- *   1. Cucumber forbids @Component on glue classes (causes duplicate bean definitions)
- *   2. Spring Boot forbids @AutoConfigureMockMvc on @Component beans
- *   3. IntelliJ flags @Autowired on non-Spring-managed classes as an error
- *
- * The solution that satisfies all three constraints is constructor injection.
- * Cucumber's Spring integration calls the constructor and passes the MockMvc
- * bean from the shared application context defined in CucumberSpringConfiguration.
- * No @Autowired annotation is needed — Spring resolves constructor arguments
- * automatically when there is exactly one constructor.
- *
- * This is also the preferred injection style in modern Spring regardless:
- * constructor injection makes dependencies explicit and testable.
- */
+
 public class TradeStepDefinitions {
 
     private final MockMvc mockMvc;
@@ -38,11 +22,6 @@ public class TradeStepDefinitions {
     private MvcResult lastResult;
     private String currentUserId;
 
-    /*
-     * Cucumber's Spring integration sees this single constructor and injects
-     * MockMvc from the Spring context set up by CucumberSpringConfiguration.
-     * ObjectMapper is also injected from context — no @Autowired needed.
-     */
     public TradeStepDefinitions(MockMvc mockMvc, ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;

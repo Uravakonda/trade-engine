@@ -80,12 +80,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--
-            Spring Boot 4.0 modularised MVC testing into its own artifact.
-            @WebMvcTest, @AutoConfigureMockMvc, and MockMvc auto-configuration
-            now live in spring-boot-webmvc-test, NOT in spring-boot-starter-test.
-            Without this, the compiler cannot find those annotations at all.
-        -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-webmvc-test</artifactId>
@@ -148,12 +143,6 @@
                 </configuration>
             </plugin>
 
-            <!--
-                This block explicitly registers Lombok as an annotation
-                processor for Maven's compiler. Without it, Spring Boot 4.x
-                does not guarantee Lombok runs during mvn compile, which
-                causes all the "cannot find symbol: method getUserId()" errors.
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

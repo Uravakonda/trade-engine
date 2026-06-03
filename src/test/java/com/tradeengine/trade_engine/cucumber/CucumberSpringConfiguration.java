@@ -11,7 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 @CucumberContextConfiguration
 @SpringBootTest
 @AutoConfigureMockMvc
-@Configuration  // Required: without this, @Bean methods are invisible to Spring Boot 4.x
+@Configuration
 @TestPropertySource(properties = {
         "spring.kafka.bootstrap-servers=localhost:9999",
         "spring.batch.job.enabled=false"

@@ -5,23 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
-/*
- * Theory — DTOs (Data Transfer Objects):
- *
- * A DTO is the shape of data crossing a boundary — in this case,
- * the JSON body a client sends to the REST API.
- *
- * Never expose your JPA entity directly as an API request/response.
- * If you did, a client could try to set the 'id' or 'status' fields
- * directly, bypassing your business logic. DTOs give you full control
- * over what the outside world can send in.
- *
- * Bean Validation annotations (@NotBlank, @NotNull, @DecimalMin) are
- * processed by Spring when you put @Valid on the controller method
- * parameter. If any constraint fails, Spring automatically returns
- * HTTP 400 Bad Request with details of which fields failed — you write
- * zero validation code yourself.
- */
+
 @Data
 public class TradeRequest {
 

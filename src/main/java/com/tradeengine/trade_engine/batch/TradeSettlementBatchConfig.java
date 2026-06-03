@@ -46,7 +46,6 @@ public class TradeSettlementBatchConfig {
     private final TradeRepository tradeRepository;
     private final JobOperator jobOperator;
 
-    // ── Reader ────────────────────────────────────────────────────────────
 
     @Bean
     @StepScope
@@ -61,7 +60,6 @@ public class TradeSettlementBatchConfig {
                 .build();
     }
 
-    // ── Processor ─────────────────────────────────────────────────────────
 
     @Bean
     public ItemProcessor<Trade, Trade> settleTradeProcessor() {
@@ -72,7 +70,6 @@ public class TradeSettlementBatchConfig {
         };
     }
 
-    // ── Writer ────────────────────────────────────────────────────────────
 
     @Bean
     public ItemWriter<Trade> settledTradesWriter() {
@@ -82,32 +79,16 @@ public class TradeSettlementBatchConfig {
         };
     }
 
-    // ── Step ──────────────────────────────────────────────────────────────
 
     @Bean
     public Step settlementStep() {
-        /*
-         * LimitCheckingExceptionHierarchySkipPolicy is the Batch 6 replacement
-         * for the deprecated LimitCheckingItemSkipPolicy.
-         *
-         * Constructor: (Set<Class<? extends Throwable>> skippableExceptions, int skipLimit)
-         * This allows skipping any Exception subclass, up to 5 total failures.
-         * If more than 5 items fail, the step itself fails.
-         */
+
         SkipPolicy skipPolicy = new LimitCheckingExceptionHierarchySkipPolicy(
                 Set.of(Exception.class),
                 5
         );
 
-        /*
-         * ChunkOrientedStepBuilder constructors available in Batch 6.0.3:
-         *   (String name, JobRepository, int chunkSize)          ← name required
-         *   (JobRepository, int chunkSize)                        ← name = bean name
-         *   (StepBuilderHelper<?>, int chunkSize)                 ← internal use
-         *
-         * The transaction manager is NOT a constructor argument.
-         * It is set via .transactionManager(tm) on the builder chain.
-         */
+
         return new ChunkOrientedStepBuilder<Trade, Trade>(
                 "settlementStep",
                 jobRepository,
@@ -121,7 +102,6 @@ public class TradeSettlementBatchConfig {
                 .build();
     }
 
-    // ── Job ───────────────────────────────────────────────────────────────
 
     @Bean
     public Job tradeSettlementJob() {
@@ -142,7 +122,6 @@ public class TradeSettlementBatchConfig {
                 .build();
     }
 
-    // ── Scheduler ─────────────────────────────────────────────────────────
 
     @Scheduled(cron = "0 0 1 * * *")
     public void runSettlementJob() {
