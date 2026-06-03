@@ -6,6 +6,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.kafka.core.KafkaTemplate;
+import com.tradeengine.trade_engine.events.TradeRequestedEvent;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
+import org.mockito.Mockito;
+import org.springframework.kafka.support.SendResult;
+import java.util.concurrent.CompletableFuture;
+
 
 @CucumberContextConfiguration
 @SpringBootTest
@@ -16,4 +26,7 @@ import org.springframework.test.context.TestPropertySource;
         "spring.batch.job.enabled=false"
 })
 public class CucumberSpringConfiguration {
+
+    @MockitoBean
+    KafkaTemplate<String, TradeRequestedEvent> kafkaTemplate;
 }
