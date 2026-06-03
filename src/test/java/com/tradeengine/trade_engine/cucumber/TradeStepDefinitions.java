@@ -3,14 +3,24 @@ package com.tradeengine.trade_engine.cucumber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tradeengine.trade_engine.domain.TradeType;
 import com.tradeengine.trade_engine.dto.TradeRequest;
+import com.tradeengine.trade_engine.events.TradeRequestedEvent;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -19,12 +29,39 @@ public class TradeStepDefinitions {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, TradeRequestedEvent> kafkaTemplate;
+
     private MvcResult lastResult;
     private String currentUserId;
 
-    public TradeStepDefinitions(MockMvc mockMvc, ObjectMapper objectMapper) {
+    public TradeStepDefinitions(MockMvc mockMvc,
+                                ObjectMapper objectMapper,
+                                KafkaTemplate<String, TradeRequestedEvent> kafkaTemplate) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    @Before
+    public void stubKafka() {
+        RecordMetadata metadata = new RecordMetadata(
+                new TopicPartition("trade-requests", 0),
+                0L, 0, 0L, 0, 0);
+
+        ProducerRecord<String, TradeRequestedEvent> record =
+                new ProducerRecord<>("trade-requests", "test-key", null);
+
+        SendResult<String, TradeRequestedEvent> sendResult =
+                new SendResult<>(record, metadata);
+
+        CompletableFuture<SendResult<String, TradeRequestedEvent>> future =
+                CompletableFuture.completedFuture(sendResult);
+
+        Mockito.when(kafkaTemplate.send(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.any()
+        )).thenReturn(future);
     }
 
     @Given("the trade engine is running")

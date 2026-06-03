@@ -1,14 +1,14 @@
 package com.tradeengine.trade_engine;
 
-import com.tradeengine.trade_engine.config.TestConfig;
+import com.tradeengine.trade_engine.events.TradeRequestedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.TestPropertySource;
-
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
-@Import(TestConfig.class)
+@MockitoBean(types = KafkaTemplate.class)
 @TestPropertySource(properties = {
         "spring.kafka.bootstrap-servers=localhost:9999",
         "spring.batch.job.enabled=false"
