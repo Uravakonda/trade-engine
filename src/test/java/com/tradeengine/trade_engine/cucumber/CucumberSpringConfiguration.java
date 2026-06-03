@@ -1,25 +1,19 @@
 package com.tradeengine.trade_engine.cucumber;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tradeengine.trade_engine.config.TestConfig;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @CucumberContextConfiguration
 @SpringBootTest
 @AutoConfigureMockMvc
-@Configuration
+@Import(TestConfig.class)
 @TestPropertySource(properties = {
         "spring.kafka.bootstrap-servers=localhost:9999",
         "spring.batch.job.enabled=false"
 })
 public class CucumberSpringConfiguration {
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 }
